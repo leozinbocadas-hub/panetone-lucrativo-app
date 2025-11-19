@@ -3,9 +3,10 @@ import { useProgress } from '@/hooks/useProgress';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { LogOut, BookOpen, Video, FileText, Download, CheckCircle2, Lock, Sparkles } from 'lucide-react';
+import { LogOut, BookOpen, Video, FileText, Download, CheckCircle2, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
+import panetonelogo from '@/assets/panetone-logo.png';
 
 const Dashboard = () => {
   const { logout } = useAuth();
@@ -65,15 +66,11 @@ const Dashboard = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shrink-0">
-                <Sparkles className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <div className="min-w-0">
-                <h1 className="text-base sm:text-lg font-bold text-foreground truncate">
-                  Panetone Lucrativo
-                </h1>
-                <p className="text-xs text-muted-foreground hidden sm:block">Área de Membros</p>
-              </div>
+              <img 
+                src={panetonelogo} 
+                alt="Panetone Lucrativo" 
+                className="h-10 sm:h-12 w-auto"
+              />
             </div>
             <Button
               variant="ghost"

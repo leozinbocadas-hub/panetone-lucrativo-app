@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Sparkles, Mail, Lock } from 'lucide-react';
+import { Mail, Lock } from 'lucide-react';
+import panetonelogo from '@/assets/panetone-logo.png';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -63,12 +64,13 @@ const Auth = () => {
       <div className="w-full max-w-md relative">
         {/* Logo and Title */}
         <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-4 shadow-xl">
-            <Sparkles className="w-8 h-8 text-primary-foreground" />
+          <div className="inline-flex items-center justify-center mb-6">
+            <img 
+              src={panetonelogo} 
+              alt="Panetone Lucrativo" 
+              className="w-48 sm:w-56 h-auto"
+            />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
-            Panetone Lucrativo
-          </h1>
           <p className="text-sm sm:text-base text-muted-foreground">
             Entre na sua área de membros
           </p>
