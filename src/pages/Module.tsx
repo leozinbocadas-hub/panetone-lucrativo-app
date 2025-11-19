@@ -29,6 +29,11 @@ const Module = () => {
   const handleComplete = () => {
     markModuleComplete(moduleId);
     
+    // Som de celebração
+    const audio = new Audio('/sounds/celebration.mp3');
+    audio.volume = 0.5;
+    audio.play().catch(err => console.log('Erro ao tocar som:', err));
+    
     // Animação de confetes
     const duration = 3000;
     const animationEnd = Date.now() + duration;
