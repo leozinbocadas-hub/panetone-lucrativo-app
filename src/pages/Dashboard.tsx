@@ -31,31 +31,31 @@ const Dashboard = () => {
   const modules = [
     {
       id: 1,
-      title: 'Introdução',
-      description: 'Fundamentos do Panetone Lucrativo',
+      title: 'Começando do Zero',
+      description: 'Panetones que Vendem',
       icon: BookOpen,
       lessons: '5 aulas',
     },
     {
       id: 2,
-      title: 'Receitas',
-      description: 'Receitas exclusivas e técnicas',
+      title: 'Produção Profissional',
+      description: 'sem Complicação',
       icon: FileText,
-      lessons: '8 aulas',
+      lessons: '5 aulas',
     },
     {
       id: 3,
-      title: 'Marketing',
-      description: 'Como vender seus panetones',
+      title: 'Marketing e Vendas',
+      description: 'para Bombar no Natal',
       icon: Video,
-      lessons: '6 aulas',
+      lessons: '5 aulas',
     },
     {
       id: 4,
-      title: 'Recursos',
-      description: 'Materiais complementares',
+      title: 'Aumentar Produção',
+      description: 'e Multiplicar Lucros',
       icon: Download,
-      lessons: '4 aulas',
+      lessons: '5 aulas',
     },
   ];
 
@@ -179,11 +179,14 @@ const Dashboard = () => {
         </div>
 
         {/* Bonus Section - Mobile First */}
-        <Card className={`${
-          bonusUnlocked 
-            ? 'border-secondary/50 bg-gradient-to-br from-card to-secondary/10' 
-            : 'border-muted bg-muted/30'
-        } relative overflow-hidden`}>
+        <Card 
+          className={`${
+            bonusUnlocked 
+              ? 'border-secondary/50 bg-gradient-to-br from-card to-secondary/10 cursor-pointer hover:shadow-lg' 
+              : 'border-muted bg-muted/30'
+          } relative overflow-hidden transition-all duration-300`}
+          onClick={() => bonusUnlocked && navigate('/module/5')}
+        >
           {!bonusUnlocked && (
             <div className="absolute inset-0 bg-background/60 backdrop-blur-sm z-10 flex items-center justify-center">
               <div className="text-center px-4">
@@ -206,8 +209,8 @@ const Dashboard = () => {
                 <Download className={`w-6 h-6 ${bonusUnlocked ? 'text-secondary' : 'text-muted-foreground'}`} />
               </div>
               <div className="flex-1 min-w-0">
-                <CardTitle className="text-lg sm:text-xl mb-2 flex items-center gap-2">
-                  🎁 Bônus Especial
+                <CardTitle className="text-lg sm:text-xl mb-2 flex items-center gap-2 flex-wrap">
+                  📓 Módulo 5: Estratégias Secretas
                   {bonusUnlocked && (
                     <Badge className="bg-secondary text-secondary-foreground">
                       Disponível
@@ -215,7 +218,7 @@ const Dashboard = () => {
                   )}
                 </CardTitle>
                 <CardDescription className="text-sm sm:text-base">
-                  Materiais extras exclusivos e templates para turbinar suas vendas
+                  para Vender Muito Mais
                 </CardDescription>
               </div>
             </div>
