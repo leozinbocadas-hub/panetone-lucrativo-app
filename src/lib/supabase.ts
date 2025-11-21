@@ -13,12 +13,11 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 export type Member = {
   id: string;
-  user_id: string;
-  full_name: string;
   email: string;
+  password_hash: string;
   purchase_date: string;
-  subscription_status: string;
-  gateway_transaction_id?: string;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
+  nome_exibicao: string | null;
 };
