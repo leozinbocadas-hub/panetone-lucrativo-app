@@ -21,11 +21,20 @@ const Dashboard = () => {
   };
 
   const getDaysUntilBonus = () => {
-    if (!enrollmentDate) return 7;
-    const enrollment = new Date(enrollmentDate);
-    const now = new Date();
-    const daysPassed = Math.floor((now.getTime() - enrollment.getTime()) / (1000 * 60 * 60 * 24));
-    return Math.max(0, 7 - daysPassed);
+    const savedSession = localStorage.getItem('user_session');
+    if (!savedSession) return 7;
+    
+    try {
+      const usuario = JSON.parse(savedSession);
+      if (!usuario.created_at) return 7;
+      
+      const compra = new Date(usuario.created_at);
+      const now = new Date();
+      const daysPassed = Math.floor((now.getTime() - compra.getTime()) / (1000 * 60 * 60 * 24));
+      return Math.max(0, 7 - daysPassed);
+    } catch (error) {
+      return 7;
+    }
   };
 
   const modules = [
