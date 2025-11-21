@@ -57,10 +57,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchMemberData = async (userId: string) => {
     try {
+      // Buscar email do usuário autenticado
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user?.email) {
+        console.error('No user email found');
+        return;
+      }
+
+      // Buscar dados na tabela usuarios usando o email
       const { data, error } = await supabase
-        .from('members')
+        .from('usuarios')
         .select('*')
-        .eq('user_id', userId)
+        .eq('email', user.email)
+        .eq('is_active', true)
         .maybeSingle();
 
       if (error) {
