@@ -4,8 +4,9 @@ import { supabase, Usuario } from '@/lib/supabase';
 interface AuthContextType {
   isAuthenticated: boolean;
   user: Usuario | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
+  resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,7 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
       console.log('Tentando login com:', email);
       
@@ -36,19 +37,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const { data: usuarios, error } = await supabase
         .from('usuarios')
         .select('*')
-        .eq('email', email)
+        .eq('email', email.trim().toLowerCase())
         .eq('is_active', true);
 
       console.log('Resposta do Supabase:', { usuarios, error });
 
       if (error) {
         console.error('Erro ao buscar usuário:', error);
-        return false;
+        return { success: false, error: 'Erro ao buscar usuário' };
       }
 
       if (!usuarios || usuarios.length === 0) {
         console.error('Usuário não encontrado');
-        return false;
+        return { success: false, error: 'Email ou senha inválidos' };
       }
 
       const usuario = usuarios[0];
@@ -61,14 +62,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('user_session', JSON.stringify(usuario));
         setUser(usuario);
         setIsAuthenticated(true);
-        return true;
+        return { success: true };
       }
 
       console.error('Senha incorreta');
-      return false;
+      return { success: false, error: 'Email ou senha inválidos' };
     } catch (error) {
       console.error('Erro no login:', error);
-      return false;
+      return { success: false, error: 'Erro ao fazer login. Tente novamente.' };
     }
   };
 
@@ -78,8 +79,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsAuthenticated(false);
   };
 
+  const resetPassword = async (email: string): Promise<{ success: boolean; error?: string }> => {
+    // Função placeholder - você pode implementar recuperação de senha depois
+    return { success: false, error: 'Funcionalidade de recuperação de senha em desenvolvimento' };
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );
