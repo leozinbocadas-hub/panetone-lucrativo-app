@@ -7,6 +7,7 @@ interface ProgressContextType {
   getProgressPercentage: () => number;
   enrollmentDate: string | null;
   canAccessBonus: () => boolean;
+  getDaysUntilBonus: () => number;
 }
 
 const ProgressContext = createContext<ProgressContextType | undefined>(undefined);
@@ -14,24 +15,33 @@ const ProgressContext = createContext<ProgressContextType | undefined>(undefined
 const TOTAL_MODULES = 4;
 const DAYS_TO_UNLOCK_BONUS = 7;
 
+// Função para calcular dias desde a compra
+const calcularDias = (created_at: string): number => {
+  const compra = new Date(created_at);
+  const hoje = new Date();
+  return Math.floor((hoje.getTime() - compra.getTime()) / (1000 * 60 * 60 * 24));
+};
+
 export const ProgressProvider = ({ children }: { children: ReactNode }) => {
   const [completedModules, setCompletedModules] = useState<number[]>([]);
   const [enrollmentDate, setEnrollmentDate] = useState<string | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('panetone_progress');
-    const enrollment = localStorage.getItem('panetone_enrollment_date');
+    const userSession = localStorage.getItem('user_session');
     
     if (saved) {
       setCompletedModules(JSON.parse(saved));
     }
     
-    if (!enrollment) {
-      const today = new Date().toISOString();
-      localStorage.setItem('panetone_enrollment_date', today);
-      setEnrollmentDate(today);
-    } else {
-      setEnrollmentDate(enrollment);
+    // Usar created_at do usuário como data de matrícula
+    if (userSession) {
+      try {
+        const userData = JSON.parse(userSession);
+        setEnrollmentDate(userData.created_at);
+      } catch (error) {
+        console.error('Erro ao carregar data de matrícula:', error);
+      }
     }
   }, []);
 
@@ -53,10 +63,13 @@ export const ProgressProvider = ({ children }: { children: ReactNode }) => {
 
   const canAccessBonus = () => {
     if (!enrollmentDate) return false;
-    const enrollment = new Date(enrollmentDate);
-    const now = new Date();
-    const daysDiff = Math.floor((now.getTime() - enrollment.getTime()) / (1000 * 60 * 60 * 24));
-    return daysDiff >= DAYS_TO_UNLOCK_BONUS;
+    return calcularDias(enrollmentDate) >= DAYS_TO_UNLOCK_BONUS;
+  };
+
+  const getDaysUntilBonus = () => {
+    if (!enrollmentDate) return DAYS_TO_UNLOCK_BONUS;
+    const diasPassados = calcularDias(enrollmentDate);
+    return Math.max(0, DAYS_TO_UNLOCK_BONUS - diasPassados);
   };
 
   return (
@@ -67,6 +80,7 @@ export const ProgressProvider = ({ children }: { children: ReactNode }) => {
       getProgressPercentage,
       enrollmentDate,
       canAccessBonus,
+      getDaysUntilBonus,
     }}>
       {children}
     </ProgressContext.Provider>

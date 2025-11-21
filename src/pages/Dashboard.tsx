@@ -10,22 +10,15 @@ import panetonelogo from '@/assets/panetone-logo.png';
 
 const Dashboard = () => {
   const { logout } = useAuth();
-  const { getProgressPercentage, isModuleComplete, canAccessBonus, enrollmentDate } = useProgress();
+  const { getProgressPercentage, isModuleComplete, canAccessBonus, getDaysUntilBonus } = useProgress();
   const navigate = useNavigate();
   const progressPercentage = getProgressPercentage();
   const bonusUnlocked = canAccessBonus();
+  const diasRestantes = getDaysUntilBonus();
 
   const handleLogout = () => {
     logout();
     navigate('/auth');
-  };
-
-  const getDaysUntilBonus = () => {
-    if (!enrollmentDate) return 7;
-    const enrollment = new Date(enrollmentDate);
-    const now = new Date();
-    const daysPassed = Math.floor((now.getTime() - enrollment.getTime()) / (1000 * 60 * 60 * 24));
-    return Math.max(0, 7 - daysPassed);
   };
 
   const modules = [
@@ -192,10 +185,10 @@ const Dashboard = () => {
               <div className="text-center px-4">
                 <Lock className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                 <p className="font-semibold text-foreground text-sm sm:text-base mb-1">
-                  Bloqueado por {getDaysUntilBonus()} {getDaysUntilBonus() === 1 ? 'dia' : 'dias'}
+                  🔒 Bloqueado
                 </p>
                 <p className="text-xs sm:text-sm text-muted-foreground">
-                  Complete os módulos e aguarde 7 dias
+                  Disponível em {diasRestantes} {diasRestantes === 1 ? 'dia' : 'dias'}
                 </p>
               </div>
             </div>
