@@ -52,11 +52,21 @@ export const ProgressProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const canAccessBonus = () => {
-    if (!enrollmentDate) return false;
-    const enrollment = new Date(enrollmentDate);
-    const now = new Date();
-    const daysDiff = Math.floor((now.getTime() - enrollment.getTime()) / (1000 * 60 * 60 * 24));
-    return daysDiff >= DAYS_TO_UNLOCK_BONUS;
+    // Verificar se há usuário logado com data de compra
+    const savedSession = localStorage.getItem('user_session');
+    if (!savedSession) return false;
+    
+    try {
+      const usuario = JSON.parse(savedSession);
+      if (!usuario.created_at) return false;
+      
+      const compra = new Date(usuario.created_at);
+      const now = new Date();
+      const daysDiff = Math.floor((now.getTime() - compra.getTime()) / (1000 * 60 * 60 * 24));
+      return daysDiff >= DAYS_TO_UNLOCK_BONUS;
+    } catch (error) {
+      return false;
+    }
   };
 
   return (

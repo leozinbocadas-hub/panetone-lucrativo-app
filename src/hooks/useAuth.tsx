@@ -22,37 +22,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setIsAuthenticated(!!session);
-        
-        // Defer member data fetching
-        if (session?.user) {
-          setTimeout(() => {
-            fetchMemberData(session.user.id);
-          }, 0);
-        } else {
-          setMember(null);
-        }
+    // Verificar sessão local
+    const savedSession = localStorage.getItem('user_session');
+    if (savedSession) {
+      try {
+        const usuario = JSON.parse(savedSession);
+        setUser({ id: usuario.id, email: usuario.email } as User);
+        setMember(usuario);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error('Erro ao carregar sessão:', error);
+        localStorage.removeItem('user_session');
       }
-    );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsAuthenticated(!!session);
-      
-      if (session?.user) {
-        fetchMemberData(session.user.id);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    }
+    setLoading(false);
   }, []);
 
   const fetchMemberData = async (userId: string) => {
@@ -86,14 +69,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      // Buscar usuário na tabela usuarios
+      const { data: usuario, error } = await supabase
+        .from('usuarios')
+        .select('*')
+        .eq('email', email.trim().toLowerCase())
+        .eq('is_active', true)
+        .maybeSingle();
 
-      if (error) {
-        return { success: false, error: error.message };
+      if (error || !usuario) {
+        return { success: false, error: 'Email ou senha inválidos' };
       }
+
+      // Comparar senha em texto plano
+      if (usuario.password_hash !== password) {
+        return { success: false, error: 'Email ou senha inválidos' };
+      }
+
+      // Criar sessão local
+      setUser({ id: usuario.id, email: usuario.email } as User);
+      setMember(usuario);
+      setIsAuthenticated(true);
+      localStorage.setItem('user_session', JSON.stringify(usuario));
 
       return { success: true };
     } catch (error: any) {
@@ -103,8 +100,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     try {
-      await supabase.auth.signOut();
+      setUser(null);
       setMember(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem('user_session');
     } catch (error) {
       console.error('Error logging out:', error);
     }
